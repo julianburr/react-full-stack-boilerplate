@@ -1,0 +1,15 @@
+{
+  "name": "@julianburr/prettier-config",
+  "version": "0.0.1",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "true"
+  },
+  "peerDependencies": {
+    "prettier": "^3.7.4"
+  }
+}
