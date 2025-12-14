@@ -1,0 +1,25 @@
+{
+  "name": "react-full-stack-boilerplate",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "turbo run lint",
+    "lint:staged": "lint-staged && turbo run lint:staged --concurrency=1",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@julianburr/eslint-config": "workspace:*",
+    "@julianburr/prettier-config": "workspace:*",
+    "eslint": "^9.39.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0"
+  },
+  "lint-staged": {
+    "**/*.{md,mdx,json,yml}": "prettier --write"
+  },
+  "packageManager": "pnpm@10.25.0"
+}
