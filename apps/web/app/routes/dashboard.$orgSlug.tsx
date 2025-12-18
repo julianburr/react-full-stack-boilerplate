@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-router';
 import { Navigate, useParams } from 'react-router';
 
 import { useAuth } from '~/utils/auth';
@@ -6,8 +7,8 @@ export default function Dashboard() {
   const auth = useAuth();
   const params = useParams();
 
-  const handleSignOut = async () => {
-    await auth.signOut({ redirectUrl: '/auth/sign-in' });
+  const handleClick = async () => {
+    Sentry.captureException(new Error('Test error'));
   };
 
   if (!auth.isLoaded) {
@@ -21,7 +22,7 @@ export default function Dashboard() {
   return (
     <>
       <pre>Dashboard</pre>
-      <button onClick={handleSignOut}>Sign out</button>
+      <button onClick={handleClick}>Test</button>
 
       <pre>{JSON.stringify({ params, auth }, null, 2)}</pre>
     </>

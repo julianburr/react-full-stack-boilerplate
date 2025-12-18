@@ -1,4 +1,5 @@
 import { WarningCircleIcon } from '@phosphor-icons/react';
+import * as Sentry from '@sentry/react-router';
 import { toast as hotToast, useToaster } from 'react-hot-toast';
 
 export function Toaster() {
@@ -36,6 +37,7 @@ function info(message: string) {
 }
 
 function error(error: Error | string, options: { originalError?: Error } = {}) {
+  Sentry.captureException(error);
   console.error(options?.originalError || error);
   const e = error instanceof Error ? error : new Error(error);
   if (options.originalError) {

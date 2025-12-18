@@ -11,6 +11,5 @@ export function setupSentry() {
     environment: process.env.ENV || 'local',
     sendDefaultPii: true,
     integrations: [Sentry.pinoIntegration()],
-    tracesSampleRate: process.env.NODE_ENV !== 'production' ? 1.0 : 0.3,
   });
 }

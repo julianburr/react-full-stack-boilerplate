@@ -59,6 +59,9 @@ importers:
       '@sendgrid/mail':
         specifier: ^8.1.6
         version: 8.1.6
+      '@sentry/cli':
+        specifier: ^2.58.4
+        version: 2.58.4
       '@sentry/node':
         specifier: ^10.32.0
         version: 10.32.0
@@ -228,6 +231,12 @@ importers:
       lucide-react:
         specifier: ^0.561.0
         version: 0.561.0(react@19.2.3)
+      pino:
+        specifier: ^10.1.0
+        version: 10.1.0
+      pino-sentry-transport:
+        specifier: ^1.6.0
+        version: 1.6.0(@sentry/node@10.32.0)(pino@10.1.0)
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -5241,6 +5250,10 @@ packages:
   lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
 
+  lodash.get@4.4.2:
+    resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
+    deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
+
   lodash.includes@4.3.0:
     resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
 
@@ -5778,6 +5791,13 @@ packages:
   pino-pretty@13.1.3:
     resolution: {integrity: sha512-ttXRkkOz6WWC95KeY9+xxWL6AtImwbyMHrL1mSwqwW9u+vLp/WIElvHvCSDg0xO/Dzrggz1zv3rN5ovTRVowKg==}
     hasBin: true
+
+  pino-sentry-transport@1.6.0:
+    resolution: {integrity: sha512-UyV2TlTn7sL7Rinr69vGzpGBOhh/ueuMrFz3qASauHDHfklDFXfH+6Hc11EXSVH86nxHgF8kx6/fAOgQJhcsIQ==}
+    engines: {node: '> 14'}
+    peerDependencies:
+      '@sentry/node': ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+      pino: ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
 
   pino-std-serializers@7.0.0:
     resolution: {integrity: sha512-e906FRY0+tV27iq4juKzSYPbUj2do2X2JX4EzSca1631EB2QJQUqGbDuERal7LCtOpxl6x3+nvo9NPZcmjkiFA==}
@@ -12764,6 +12784,8 @@ snapshots:
 
   lodash.clonedeep@4.5.0: {}
 
+  lodash.get@4.4.2: {}
+
   lodash.includes@4.3.0: {}
 
   lodash.isboolean@3.0.3: {}
@@ -13377,6 +13399,13 @@ snapshots:
       secure-json-parse: 4.1.0
       sonic-boom: 4.2.0
       strip-json-comments: 5.0.3
+
+  pino-sentry-transport@1.6.0(@sentry/node@10.32.0)(pino@10.1.0):
+    dependencies:
+      '@sentry/node': 10.32.0
+      lodash.get: 4.4.2
+      pino: 10.1.0
+      pino-abstract-transport: 1.2.0
 
   pino-std-serializers@7.0.0: {}
 

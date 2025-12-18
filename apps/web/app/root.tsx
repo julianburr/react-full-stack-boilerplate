@@ -1,6 +1,7 @@
 import { ClerkProvider } from '@clerk/react-router';
 import { clerkMiddleware, getAuth, rootAuthLoader } from '@clerk/react-router/server';
 import { IconContext } from '@phosphor-icons/react';
+import * as Sentry from '@sentry/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as R from 'react-router';
 
@@ -11,13 +12,9 @@ import { Heading, P } from '~/components/text';
 import { Toaster } from '~/components/toaster';
 import { api } from '~/utils/api';
 import { AuthProvider } from '~/utils/auth/auth-context';
-import { setupSentry } from '~/utils/sentry';
+import { logger } from '~/utils/logger.server';
 
 import './app.css';
-
-setupSentry();
-
-const queryClient = new QueryClient();
 
 /**
  * Clerk middleware
@@ -37,6 +34,8 @@ export const middleware: Route.MiddlewareFunction[] = [
 export const loader = async (args: Route.LoaderArgs) => {
   const auth = await rootAuthLoader(args);
   const clerk = await getAuth(args, { acceptsToken: ['session_token'] });
+
+  throw new Error('Testing uncaught exception');
 
   api.setUrl(import.meta.env.VITE_API_URL!);
   api.setGetToken(clerk.getToken);
@@ -92,6 +91,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function App({ loaderData }: Route.ComponentProps) {
   const { auth, ...rest } = loaderData;
   return (
@@ -112,6 +113,12 @@ export default function App({ loaderData }: Route.ComponentProps) {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (typeof window === 'undefined') {
+    logger.fatal(error);
+  } else {
+    Sentry.captureException(error);
+  }
+
   let message = 'Oops!';
   let details = 'An unexpected error occurred.';
   let stack: string | undefined;

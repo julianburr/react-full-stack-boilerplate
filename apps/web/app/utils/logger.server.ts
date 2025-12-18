@@ -13,13 +13,30 @@ const transport = pino.transport({
           },
         ]
       : []),
+
+    ...(process.env.VITE_SENTRY_DSN
+      ? [
+          {
+            target: 'pino-sentry-transport',
+            options: {
+              sentry: {
+                dsn: process.env.VITE_SENTRY_DSN,
+                release: process.env.VITE_RELEASE_VERSION || '0.0.0-local.0',
+                environment: process.env.VITE_ENV || 'local',
+                sendDefaultPii: true,
+              },
+            },
+          },
+        ]
+      : []),
+
     { target: 'pino-pretty' },
   ],
 });
 
 export const logger = pino(
   {
-    name: 'api',
+    name: 'web',
     level: process.env.PINO_LOG_LEVEL || 'info',
     timestamp: pino.stdTimeFunctions.isoTime,
   },
