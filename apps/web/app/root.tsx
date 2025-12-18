@@ -35,8 +35,6 @@ export const loader = async (args: Route.LoaderArgs) => {
   const auth = await rootAuthLoader(args);
   const clerk = await getAuth(args, { acceptsToken: ['session_token'] });
 
-  throw new Error('Testing uncaught exception');
-
   api.setUrl(import.meta.env.VITE_API_URL!);
   api.setGetToken(clerk.getToken);
   const me = await api('/me');
