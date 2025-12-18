@@ -4,5 +4,9 @@ packages:
 
 onlyBuiltDependencies:
   - '@clerk/shared'
+  - browser-tabs-lock
+  - bufferutil
+  - core-js
   - esbuild
   - protobufjs
+  - utf-8-validate
