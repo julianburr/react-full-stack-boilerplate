@@ -1,9 +1,9 @@
 import type { FastifyPluginAsync } from 'fastify';
 
+import { ensureAuth } from '~/features/auth';
 import { ensureCustomer } from '~/features/billing/ensure-customer';
-import { ensureAuth } from '~/utils/auth';
 import { getClerkClient } from '~/utils/clerk';
-import { ForbiddenError, NotFoundError } from '~/utils/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '~/utils/errors';
 import { getStripeClient } from '~/utils/stripe';
 
 const team: FastifyPluginAsync = async (fastify): Promise<void> => {
@@ -11,52 +11,48 @@ const team: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Create new org
    */
   fastify.post<{ Body: { name: string; email: string } }>('/', async (req) => {
-    const auth = ensureAuth(req);
+    const auth = await ensureAuth(req);
+
+    if (!auth.org?.id) {
+      throw new BadRequestError('Organization not found');
+    }
 
     // Create org in Clerk
     const clerk = getClerkClient();
-    const org = await clerk.organizations.createOrganization({
-      name: req.body.name,
-      privateMetadata: {
-        email: req.body.email,
-      },
-    });
-
     await clerk.organizations.createOrganizationMembership({
-      organizationId: org.id,
+      organizationId: auth.org.id,
       userId: auth.userId,
       role: 'org:admin',
     });
 
     // Create customer in Stripe
-    await ensureCustomer({ auth, org });
+    await ensureCustomer({ auth });
 
-    return { success: true, data: org };
+    return { success: true };
   });
 
   /**
    * Update org
    */
   fastify.patch<{ Body: { name: string; email: string } }>('/', async (req) => {
-    const auth = ensureAuth(req);
+    const auth = await ensureAuth(req);
     if (auth.orgRole !== 'org:admin') {
       throw new ForbiddenError();
     }
 
     // Update org in Clerk
     const clerk = getClerkClient();
-    const org = await clerk.organizations.getOrganization({ organizationId: auth.orgId });
     const updatedOrg = await clerk.organizations.updateOrganization(auth.orgId, {
       name: req.body.name,
       privateMetadata: {
-        ...(org.privateMetadata || {}),
+        ...(auth.org?.privateMetadata || {}),
         email: req.body.email,
       },
     });
 
     // Update stripe customer
     const stripe = getStripeClient();
-    const customer = await ensureCustomer({ auth, org: updatedOrg });
+    const customer = await ensureCustomer({ auth });
     await stripe.customers.update(customer.id, {
       email: req.body.email,
       name: req.body.name,
@@ -73,7 +69,7 @@ const team: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Delete org
    */
   fastify.delete('/', async (req) => {
-    const auth = ensureAuth(req);
+    const auth = await ensureAuth(req);
     if (auth.orgRole !== 'org:admin') {
       throw new ForbiddenError();
     }

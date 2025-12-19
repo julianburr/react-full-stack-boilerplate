@@ -38,6 +38,7 @@
     "fastify": "^5.0.0",
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.0.0",
+    "flagsmith-nodejs": "^7.0.2",
     "nodemailer": "^7.0.11",
     "pg": "^8.16.3",
     "pino": "^10.1.0",

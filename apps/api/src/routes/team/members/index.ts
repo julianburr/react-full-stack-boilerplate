@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
 
-import { ensureAuth } from '~/utils/auth';
+import { ensureAuth } from '~/features/auth';
 import { getClerkClient } from '~/utils/clerk';
 import { BadRequestError, NotFoundError } from '~/utils/errors';
 
@@ -9,7 +9,7 @@ const invoices: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Get all members and invitations
    */
   fastify.get('/', async function (req) {
-    const auth = ensureAuth(req);
+    const auth = await ensureAuth(req);
 
     // Get members and invitations from Clerk
     const clerk = getClerkClient();
@@ -30,7 +30,7 @@ const invoices: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Invite a new member
    */
   fastify.post<{ Body: { email: string; role?: string } }>('/', async function (req) {
-    const auth = ensureAuth(req);
+    const auth = await ensureAuth(req);
 
     // Validation
     // TODO: maybe use zod
@@ -55,11 +55,10 @@ const invoices: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Remove a member or invitation
    */
   fastify.delete<{ Params: { id: string } }>('/:id', async function (req) {
-    const auth = ensureAuth(req);
-
-    const clerk = getClerkClient();
+    const auth = await ensureAuth(req);
 
     // Check if the member exists
+    const clerk = getClerkClient();
     const filter = { organizationId: auth.orgId };
     const list = await clerk.organizations.getOrganizationMembershipList(filter);
     const member = list.data.find((m) => m.id === req.params.id);

@@ -22,6 +22,8 @@ export const logger = pino(
     name: 'api',
     level: process.env.PINO_LOG_LEVEL || 'info',
     timestamp: pino.stdTimeFunctions.isoTime,
+
+    redact: ['req.headers.authorization', 'req.headers.cookie'],
   },
   transport,
 );

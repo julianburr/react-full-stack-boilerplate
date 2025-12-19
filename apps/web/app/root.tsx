@@ -12,7 +12,7 @@ import { Heading, P } from '~/components/text';
 import { Toaster } from '~/components/toaster';
 import { api } from '~/utils/api';
 import { AuthProvider } from '~/utils/auth/auth-context';
-import { logger } from '~/utils/logger.server';
+import { logger } from '~/utils/logger/index.server';
 
 import './app.css';
 
@@ -39,7 +39,20 @@ export const loader = async (args: Route.LoaderArgs) => {
   api.setGetToken(clerk.getToken);
   const me = await api('/me');
 
-  return { auth, ...me.data };
+  const sessionContext = {
+    isSignedIn: me.isAuthenticated,
+    userId: me.user?.id,
+    userEmail: me.user?.emailAddresses[0].emailAddress,
+    orgId: me.team?.id,
+    orgSlug: me.team?.slug,
+    orgName: me.team?.name,
+    flags: me.flags,
+  };
+
+  const path = new URL(args.request.url).pathname;
+  logger.info({ session: sessionContext }, `GET ${path}`);
+
+  return { auth, ...me };
 };
 
 /**
@@ -111,11 +124,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  if (typeof window === 'undefined') {
-    logger.fatal(error);
-  } else {
-    Sentry.captureException(error);
-  }
+  Sentry.captureException(error);
 
   let message = 'Oops!';
   let details = 'An unexpected error occurred.';

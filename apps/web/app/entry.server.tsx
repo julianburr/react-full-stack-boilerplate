@@ -8,7 +8,7 @@ import { ServerRouter } from 'react-router';
 import type { RenderToPipeableStreamOptions } from 'react-dom/server';
 import type { EntryContext } from 'react-router';
 
-import { logger } from '~/utils/logger.server';
+import { logger } from '~/utils/logger/index.server';
 
 export const streamTimeout = 5_000;
 
