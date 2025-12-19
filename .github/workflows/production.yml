@@ -68,6 +68,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build secrets package
+        run: pnpm build
+        working-directory: packages/secrets
+
       - name: Prepare app .env file
         run: cp .env.production .env
         working-directory: apps/web
@@ -107,6 +111,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build secrets package
+        run: pnpm build
+        working-directory: packages/secrets
 
       - name: Prepare app .env file
         run: cp .env.production .env
