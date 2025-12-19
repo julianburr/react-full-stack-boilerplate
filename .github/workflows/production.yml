@@ -32,7 +32,10 @@ jobs:
         uses: pulumi/actions@v4
 
       - name: Load .env for deployment
-        run: cat infrastructure/.env.development >> $GITHUB_ENV
+        run: |
+          node ../packages/secrets/dist/bin.js inject -i .env.production -o .env
+          cat .env >> $GITHUB_ENV
+        working-directory: infrastructure
 
       - name: Configure Pulumi
         run: |
@@ -77,11 +80,14 @@ jobs:
         working-directory: apps/web
 
       - name: Build frontend
-        run: pnpm secrets run -- pnpm build
+        run: node ../packages/secrets/dist/bin.js run -- pnpm build
         working-directory: apps/web
 
       - name: Load .env for deployment
-        run: cat infrastructure/.env.production >> $GITHUB_ENV
+        run: |
+          node ../packages/secrets/dist/bin.js inject -i .env.production -o .env
+          cat .env >> $GITHUB_ENV
+        working-directory: infrastructure
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
@@ -121,11 +127,14 @@ jobs:
         working-directory: apps/api
 
       - name: Build backend
-        run: pnpm secrets run -- pnpm build
+        run: node ../../packages/secrets/dist/bin.js run -- pnpm build
         working-directory: apps/api
 
       - name: Load .env for deployment
-        run: cat infrastructure/.env.production >> $GITHUB_ENV
+        run: |
+          node ../packages/secrets/dist/bin.js inject -i .env.production -o .env
+          cat .env >> $GITHUB_ENV
+        working-directory: infrastructure
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
