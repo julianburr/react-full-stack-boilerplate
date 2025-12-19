@@ -7,7 +7,7 @@ on:
       - chore/add-infrastructure
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: 20.19.3
   PNPM_VERSION: 10.26.0
   PHASE_TOKEN: ${{ secrets.PHASE_TOKEN }}
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.26.0
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -100,7 +100,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.26.0
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
