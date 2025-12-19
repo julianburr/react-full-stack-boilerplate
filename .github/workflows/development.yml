@@ -34,6 +34,9 @@ jobs:
       - name: Install Pulumi
         uses: pulumi/actions@v4
 
+      - name: Load .env for deployment
+        run: cat infrastructure/.env.development >> $GITHUB_ENV
+
       - name: Configure Pulumi
         run: |
           pulumi login
