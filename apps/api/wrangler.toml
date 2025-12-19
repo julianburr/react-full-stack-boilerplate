@@ -1,0 +1,7 @@
+# This file is for local development with Pages Functions
+# Production infrastructure is managed via Pulumi in infrastructure/
+# See infrastructure/index.ts for Pages project configuration
+
+# Pages Functions are in the functions/ directory
+# For local development: wrangler pages dev apps/api
+# For production: Deploy via Pulumi (from infrastructure/)

@@ -5,11 +5,16 @@
     "prepare": "husky install",
     "lint": "turbo run lint",
     "lint:staged": "lint-staged && turbo run lint:staged --concurrency=1",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "pulumi:up": "cd infrastructure && pulumi up",
+    "pulumi:preview": "cd infrastructure && pulumi preview",
+    "pulumi:destroy": "cd infrastructure && pulumi destroy"
   },
   "devDependencies": {
     "@julianburr/eslint-config": "workspace:*",
     "@julianburr/prettier-config": "workspace:*",
+    "@pulumi/cloudflare": "^6.0.0",
+    "@pulumi/pulumi": "^3.0.0",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",

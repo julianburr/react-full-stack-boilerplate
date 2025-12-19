@@ -1,0 +1,33 @@
+{
+  "name": "infrastructure",
+  "version": "1.0.0",
+  "description": "Pulumi infrastructure for Cloudflare deployments",
+  "main": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint . --quiet",
+    "lint:staged": "lint-staged",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "preview": "pulumi preview",
+    "up": "pulumi up",
+    "destroy": "pulumi destroy"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,mjs}": "eslint --fix --quiet",
+    "**/*.{json,md,yml,yaml}": "prettier --write"
+  },
+  "dependencies": {
+    "@pulumi/cloudflare": "^6.0.0",
+    "@pulumi/pulumi": "^3.0.0"
+  },
+  "devDependencies": {
+    "@julianburr/eslint-config": "workspace:*",
+    "@julianburr/prettier-config": "workspace:*",
+    "@julianburr/secrets": "workspace:*",
+    "@types/node": "^24.0.8",
+    "eslint": "^9.39.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
+  }
+}

@@ -3,3 +3,9 @@
 node_modules
 
 .turbo
+
+# Pulumi
+.pulumi/
+*.pulumi.*
+Pulumi.*.yaml
+!Pulumi.yaml

@@ -1,0 +1,133 @@
+name: Production
+
+on:
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 20
+  PNPM_VERSION: 10.26.0
+  PHASE_TOKEN: ${{ secrets.PHASE_TOKEN }}
+  PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+jobs:
+  deploy-infrastructure:
+    name: Deploy infrastructure (Production)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Pulumi
+        uses: pulumi/actions@v4
+
+      - name: Configure Pulumi
+        run: |
+          pulumi login
+          cd infrastructure
+          pulumi stack select production || pulumi stack init production
+
+      - name: Preview infrastructure changes
+        run: pulumi preview
+        working-directory: infrastructure
+
+      - name: Deploy infrastructure via Pulumi
+        run: pulumi up --yes
+        working-directory: infrastructure
+
+  deploy-web:
+    name: Deploy web app (Production)
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare app .env file
+        run: cp .env.production .env
+        working-directory: apps/web
+
+      - name: Build frontend
+        run: pnpm secrets run -- pnpm build
+        working-directory: apps/web
+
+      - name: Load .env for deployment
+        run: cat infrastructure/.env.production >> $GITHUB_ENV
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: boilerplate-web-production
+          directory: apps/web/build/client
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-api:
+    name: Deploy API app (Production)
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare app .env file
+        run: cp .env.production .env
+        working-directory: apps/api
+
+      - name: Build backend
+        run: pnpm secrets run -- pnpm build
+        working-directory: apps/api
+
+      - name: Load .env for deployment
+        run: cat infrastructure/.env.production >> $GITHUB_ENV
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: boilerplate-api-production
+          directory: apps/api
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

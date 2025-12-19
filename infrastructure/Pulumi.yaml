@@ -1,0 +1,3 @@
+name: infrastructure
+runtime: nodejs
+description: Cloudflare infrastructure for React Full Stack Boilerplate

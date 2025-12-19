@@ -1,13 +1,21 @@
 # react-full-stack-boilerplate
 
+## Deployment
+
+This project is configured for deployment to Cloudflare using Pulumi for Infrastructure as Code.
+
+- **Quick Start**: See [QUICKSTART-DEPLOYMENT.md](./QUICKSTART-DEPLOYMENT.md)
+- **Full Guide**: See [DEPLOYMENT.md](./DEPLOYMENT.md)
+- **Infrastructure**: See [infrastructure/README.md](./infrastructure/README.md)
+
 ## Stack
 
 - Package manager
   - [ ] PNPM
 - Infrastructure
-  - [ ] IaC: Pulumi
-  - [ ] Cloud: Cloudflare
-  - [ ] CI/CD: GH actions
+  - [x] IaC: Pulumi
+  - [x] Cloud: Cloudflare
+  - [x] CI/CD: GH actions
   - [ ] CI/CD workers: Blacksmith
   - [ ] Secrets: 1password / auth0 / doppler? / frontegg? / AWS / GCP
 - Observibility
