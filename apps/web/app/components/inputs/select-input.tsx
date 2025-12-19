@@ -14,7 +14,7 @@ type SelectItemValue =
 
 type Props = {
   value?: string;
-  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (e: ChangeEvent<Element>) => void;
   placeholder?: string;
   disabled?: boolean;
   items?: SelectItemValue[];

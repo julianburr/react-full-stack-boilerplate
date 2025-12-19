@@ -14,7 +14,6 @@ const apiPagesProject = new cloudflare.PagesProject(apiPagesProjectName, {
   accountId: accountId,
   productionBranch: 'main',
   buildConfig: {
-    buildCommand: 'cd apps/api && pnpm build',
     destinationDir: 'apps/api',
     rootDir: '/',
   },

@@ -1,6 +1,0 @@
-# This file is for local development with Pages
-# Production infrastructure is managed via Pulumi in infrastructure/
-# See infrastructure/src/web-stack.ts for Pages project configuration
-
-# For local development: wrangler pages dev apps/web/build/client
-# For production: Deploy via Pulumi (from infrastructure/)

@@ -32,7 +32,7 @@ export async function api(path: string, options: RequestInit & { data?: object }
     throw new Error(`HTTP error! status: ${res.status}`);
   }
 
-  return res.json();
+  return res.json() as any;
 }
 
 api.setUrl = (newBaseUrl: string) => {

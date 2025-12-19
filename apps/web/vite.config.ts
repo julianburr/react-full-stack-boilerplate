@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 
+import { cloudflare } from '@cloudflare/vite-plugin';
 import { reactRouter } from '@react-router/dev/vite';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
@@ -23,6 +24,7 @@ export default defineConfig({
     manifest: true,
   },
   plugins: [
+    cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tailwindcss(),
     reactRouter(),
     svgr(),

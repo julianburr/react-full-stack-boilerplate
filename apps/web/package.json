@@ -49,6 +49,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.19.0",
     "@julianburr/eslint-config": "workspace:*",
     "@julianburr/prettier-config": "workspace:*",
     "@julianburr/secrets": "workspace:*",
