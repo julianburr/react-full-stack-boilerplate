@@ -15,6 +15,9 @@ jobs:
   deploy-infrastructure:
     name: Deploy infrastructure (Development)
     runs-on: ubuntu-latest
+    outputs:
+      webName: ${{ steps.pulumi.outputs.webName }}
+      webUrl: ${{ steps.pulumi.outputs.webUrl }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,6 +46,7 @@ jobs:
 
       - name: Pulumi up
         uses: pulumi/actions@v6
+        id: pulumi
         with:
           command: up
           stack-name: development
@@ -81,6 +85,11 @@ jobs:
       - name: Prepare app .env file
         run: cp .env.development .env
         working-directory: apps/web
+
+      - name: Set web name and url
+        run: |
+          echo "WEB_NAME=${{ needs.deploy-infrastructure.outputs.webName }}"
+          echo "WEB_URL=${{ needs.deploy-infrastructure.outputs.webUrl }}"
 
       - name: Build frontend
         run: node ../../packages/secrets/dist/bin.js run -- pnpm build
