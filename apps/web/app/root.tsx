@@ -50,7 +50,7 @@ export const loader = async (args: Route.LoaderArgs) => {
   };
 
   const path = new URL(args.request.url).pathname;
-  logger.info({ session: sessionContext }, `GET ${path}`);
+  logger.info({ isRequestLog: true, statusCode: 200, session: sessionContext }, `GET ${path}`);
 
   return { auth, ...me };
 };
