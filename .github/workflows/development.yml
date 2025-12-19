@@ -36,8 +36,9 @@ jobs:
 
       - name: Load .env for deployment
         run: |
-          pnpm secrets inject -i infrastructure/.env.development -o infrastructure/.env
-          cat infrastructure/.env >> $GITHUB_ENV
+          pnpm secrets inject -i .env.development -o .env
+          cat .env >> $GITHUB_ENV
+        working-directory: infrastructure
 
       - name: Configure Pulumi
         run: |
@@ -79,8 +80,9 @@ jobs:
 
       - name: Load .env for deployment
         run: |
-          pnpm secrets inject -i infrastructure/.env.development -o infrastructure/.env
-          cat infrastructure/.env >> $GITHUB_ENV
+          pnpm secrets inject -i .env.development -o .env
+          cat .env >> $GITHUB_ENV
+        working-directory: infrastructure
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
@@ -121,8 +123,9 @@ jobs:
 
       - name: Load .env for deployment
         run: |
-          pnpm secrets inject -i infrastructure/.env.development -o infrastructure/.env
-          cat infrastructure/.env >> $GITHUB_ENV
+          pnpm secrets inject -i .env.development -o .env
+          cat .env >> $GITHUB_ENV
+        working-directory: infrastructure
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1

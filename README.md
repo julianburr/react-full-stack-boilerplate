@@ -11,18 +11,18 @@ This project is configured for deployment to Cloudflare using Pulumi for Infrast
 ## Stack
 
 - Package manager
-  - [ ] PNPM
+  - [x] PNPM
 - Infrastructure
-  - [x] IaC: Pulumi
+  - [x] IaC: Pulumi -- sst.dev
   - [x] Cloud: Cloudflare
   - [x] CI/CD: GH actions
   - [ ] CI/CD workers: Blacksmith
-  - [ ] Secrets: 1password / auth0 / doppler? / frontegg? / AWS / GCP
+  - [ ] Secrets: phase.dev -- 1password / auth0 / doppler? / frontegg? / AWS / GCP
 - Observibility
-  - [ ] Logger: winston / pino
+  - [x] Logger: pino -- winston
   - [ ] Uptime: betterstack
-  - [ ] Logs: betterstack / Sentry
-  - [ ] Errors: Sentry
+  - [x] Logs: betterstack -- Sentry
+  - [x] Errors: Sentry
   - [ ] Incidents: betterstack
   - [ ] Analytics: Posthog / Cloudflare / Plausible
 - Testing
@@ -33,25 +33,25 @@ This project is configured for deployment to Cloudflare using Pulumi for Infrast
   - [ ] Linting: Eslint
   - [ ] Formatting: Prettier
 - Messaging
-  - [ ] Email: Sendgrid / Resend
-  - [ ] SMS: Twilio
-  - [ ] Push: Expo
+  - [x] Email: Sendgrid / Resend
+  - [x] SMS: Twilio
+  - [x] Push: Expo
 - Misc
-  - [ ] Auth: Clerk
-  - [ ] Feature flags: Flagsmith / Posthog
-  - [ ] Payments: Stripe
+  - [x] Auth: Clerk
+  - [x] Feature flags: Flagsmith -- Posthog
+  - [x] Payments: Stripe
   - [ ] Intl: i18next
 - Backend
   - [ ] Filestorage: Supabase / AWS / GCP
-  - [ ] Database: Supabase / CockroachDB / AWS / GCP
-  - [ ] ORM: Drizzle
+  - [x] Database: Supabase -- CockroachDB / AWS / GCP
+  - [x] ORM: Drizzle
   - [ ] Email templates: MJML / React Email
 - API
-  - [ ] Framework: RedwoodSDK / Hono / fastify
+  - [x] Framework: fastify -- RedwoodSDK / Hono
 - App: Web
   - [x] Framework: React Router
-  - [ ] Styling: Tailwind / stitches / linaria / pandacss
-  - [ ] Components: shadcn
+  - [x] Styling: Tailwind -- stitches / linaria / pandacss
+  - [x] Components: shadcn
 - App: Mobile
   - [ ] Framework: React Native / Expo
 - App: Native
