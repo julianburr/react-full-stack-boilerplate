@@ -96,7 +96,7 @@ jobs:
           accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           projectName: boilerplate-web-production
           directory: apps/web/build/client
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          gitHubToken: ${{ secrets.GH_TOKEN }}
 
   deploy-api:
     name: Deploy API app (Production)
@@ -143,4 +143,4 @@ jobs:
           accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           projectName: boilerplate-api-production
           directory: apps/api
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          gitHubToken: ${{ secrets.GH_TOKEN }}
