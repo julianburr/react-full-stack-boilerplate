@@ -35,7 +35,7 @@ const worker = new cloudflare.WorkersScript(
   },
   // Let Wrangler deploy code without Pulumi trying to revert it
   {
-    ignoreChanges: ['content', 'contentFile', 'contentSha256', 'mainModule', 'modules', 'assets'],
+    ignoreChanges: ['content', 'modules', 'assets'],
   },
 );
 
