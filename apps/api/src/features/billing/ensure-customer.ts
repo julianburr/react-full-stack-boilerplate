@@ -1,22 +1,20 @@
-import type { Organization } from '@clerk/backend';
-import type { ensureAuth } from '~/utils/auth';
+import type { ensureAuth } from '~/features/auth';
 
 import { getClerkClient } from '~/utils/clerk';
 import { BadRequestError, NotFoundError } from '~/utils/errors';
 import { getStripeClient } from '~/utils/stripe';
 
 type Args = {
-  auth: ReturnType<typeof ensureAuth>;
-  org: Organization;
+  auth: Awaited<ReturnType<typeof ensureAuth>>;
 };
 
-export async function ensureCustomer({ auth, org }: Args) {
-  if (!org) {
+export async function ensureCustomer({ auth }: Args) {
+  if (!auth.org) {
     throw new BadRequestError('Organization not found');
   }
 
-  const email = org.privateMetadata.email as string;
-  const customerId = org.privateMetadata.stripeCustomerId as string;
+  const email = auth.org.privateMetadata.email as string;
+  const customerId = auth.org.privateMetadata.stripeCustomerId as string;
   if (!email) {
     throw new BadRequestError('Organization email is not set');
   }
@@ -33,10 +31,10 @@ export async function ensureCustomer({ auth, org }: Args) {
   const stripe = getStripeClient();
   const customer = await stripe.customers.create({
     email,
-    name: org.name,
+    name: auth.org.name,
     metadata: {
-      orgId: auth.orgId,
-      orgSlug: auth.orgSlug ?? '',
+      orgId: auth.org.id,
+      orgSlug: auth.org.slug ?? '',
     },
   });
 
@@ -45,9 +43,9 @@ export async function ensureCustomer({ auth, org }: Args) {
   }
 
   const clerk = getClerkClient();
-  await clerk.organizations.updateOrganization(org.id, {
+  await clerk.organizations.updateOrganization(auth.org.id, {
     privateMetadata: {
-      ...(org.privateMetadata || {}),
+      ...(auth.org.privateMetadata || {}),
       stripeCustomerId: customer.id,
     },
   });

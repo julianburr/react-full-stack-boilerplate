@@ -13,7 +13,6 @@ import { setupSentry } from '~/utils/sentry';
 setupSentry();
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {}
-
 const options: AppOptions = { logger };
 
 const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
@@ -23,9 +22,9 @@ const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void>
   fastify.register(autoLoad, { dir: join(__dirname, 'plugins'), options: opts });
   fastify.register(autoLoad, { dir: join(__dirname, 'routes'), options: opts });
 
-  fastify.setErrorHandler((error: any, _, reply) => {
-    logger.fatal(error);
-    reply.status(error.statusCode || 500).send({ error: error.message || 'Internal Server Error' });
+  fastify.setErrorHandler((error: any, req, res) => {
+    req.log.fatal(error);
+    res.status(error.statusCode || 500).send({ error: error.message || 'Internal Server Error' });
   });
 };
 

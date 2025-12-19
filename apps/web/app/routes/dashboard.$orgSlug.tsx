@@ -1,15 +1,10 @@
-import * as Sentry from '@sentry/react-router';
-import { Navigate, useParams } from 'react-router';
+import { Navigate } from 'react-router';
 
-import { useAuth } from '~/utils/auth';
+import { useAuth, useFlags } from '~/utils/auth';
 
 export default function Dashboard() {
   const auth = useAuth();
-  const params = useParams();
-
-  const handleClick = async () => {
-    Sentry.captureException(new Error('Test error'));
-  };
+  const flags = useFlags(['test-feature-1', 'test-feature-2'] as const);
 
   if (!auth.isLoaded) {
     return <div>Loading...</div>;
@@ -22,9 +17,8 @@ export default function Dashboard() {
   return (
     <>
       <pre>Dashboard</pre>
-      <button onClick={handleClick}>Test</button>
-
-      <pre>{JSON.stringify({ params, auth }, null, 2)}</pre>
+      <pre>Feature 1: {flags['test-feature-1'].enabled ? 'Enabled' : 'Disabled'}</pre>
+      <pre>Feature 2: {flags['test-feature-2'].enabled ? 'Enabled' : 'Disabled'}</pre>
     </>
   );
 }

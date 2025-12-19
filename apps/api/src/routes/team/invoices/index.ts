@@ -2,18 +2,14 @@ import camelcaseKeys from 'camelcase-keys';
 
 import type { FastifyPluginAsync } from 'fastify';
 
-import { ensureAuth } from '~/utils/auth';
-import { getClerkClient } from '~/utils/clerk';
+import { ensureAuth } from '~/features/auth';
 import { getStripeClient } from '~/utils/stripe';
 
 const invoices: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.get('/', async function (req) {
-    const auth = ensureAuth(req);
+    const auth = await ensureAuth(req);
 
-    const clerk = getClerkClient();
-    const org = await clerk.organizations.getOrganization({ organizationId: auth.orgId });
-
-    const customerId = org.privateMetadata.stripeCustomerId as string;
+    const customerId = auth.org?.privateMetadata.stripeCustomerId as string;
     if (!customerId) {
       return { data: [] };
     }

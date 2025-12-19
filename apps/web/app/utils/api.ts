@@ -1,3 +1,5 @@
+import { v4 } from 'uuid';
+
 type GetTokenFn = () => Promise<string | null>;
 
 let getToken: undefined | GetTokenFn;
@@ -8,6 +10,7 @@ export async function api(path: string, options: RequestInit & { data?: object }
     ...options,
     method: options.method || 'GET',
     headers: {
+      'x-request-id': v4(),
       ...options.headers,
     },
   } as any;

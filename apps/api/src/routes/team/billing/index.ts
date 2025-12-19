@@ -1,8 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 
+import { ensureAuth } from '~/features/auth';
 import { ensureCustomer } from '~/features/billing/ensure-customer';
-import { ensureAuth } from '~/utils/auth';
-import { getClerkClient } from '~/utils/clerk';
 import { BadRequestError } from '~/utils/errors';
 import { getStripeClient } from '~/utils/stripe';
 
@@ -16,13 +15,10 @@ const billing: FastifyPluginAsync = async (fastify): Promise<void> => {
       throw new BadRequestError('Price is required');
     }
 
-    const auth = ensureAuth(req);
-
-    const clerk = getClerkClient();
-    const org = await clerk.organizations.getOrganization({ organizationId: auth.orgId });
+    const auth = await ensureAuth(req);
 
     const stripe = getStripeClient();
-    const c = await ensureCustomer({ auth, org });
+    const c = await ensureCustomer({ auth });
 
     const customer = await stripe.customers.retrieve(c.id, { expand: ['subscriptions'] });
     if (customer.deleted) {
@@ -59,13 +55,10 @@ const billing: FastifyPluginAsync = async (fastify): Promise<void> => {
    * Downgrade by cancelling any existing subscriptions at the end of the current period
    */
   fastify.post('/downgrade', async function (req) {
-    const auth = ensureAuth(req);
-
-    const clerk = getClerkClient();
-    const org = await clerk.organizations.getOrganization({ organizationId: auth.orgId });
+    const auth = await ensureAuth(req);
 
     const stripe = getStripeClient();
-    const c = await ensureCustomer({ auth, org });
+    const c = await ensureCustomer({ auth });
 
     const customer = await stripe.customers.retrieve(c.id, { expand: ['subscriptions'] });
     if (customer.deleted) {
