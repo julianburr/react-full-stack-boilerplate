@@ -32,7 +32,9 @@ jobs:
         run: pnpm install
 
       - name: Build secrets package
-        run: pnpm build
+        run: |
+          pnpm build
+          ls dist
         working-directory: packages/secrets
 
       - name: Load .env for deployment
