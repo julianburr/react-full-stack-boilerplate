@@ -1,0 +1,50 @@
+name: Deploy web app
+description: Deploys the web app to Vercel
+
+inputs:
+  node-version:
+    description: The Node.js version to use
+    required: false
+    default: '22'
+  phase-token:
+    description: The Phase token to use
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
+
+    - name: Build secrets package
+      shell: bash
+      run: pnpm build
+      working-directory: packages/secrets
+
+    - name: Run tests & linters (api)
+      shell: bash
+      run: |
+        node ../../packages/secrets/dist/bin.js run -i=./.env.development -- pnpm typecheck
+        node ../../packages/secrets/dist/bin.js run -i=./.env.development -- pnpm lint
+      working-directory: apps/api
+      env:
+        PHASE_TOKEN: ${{ inputs.phase-token }}
+
+    - name: Run tests & linters (web)
+      shell: bash
+      run: |
+        node ../../packages/secrets/dist/bin.js run -i=./.env.development -- pnpm typecheck
+        node ../../packages/secrets/dist/bin.js run -i=./.env.development -- pnpm lint
+      working-directory: apps/web
+      env:
+        PHASE_TOKEN: ${{ inputs.phase-token }}

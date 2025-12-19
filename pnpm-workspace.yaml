@@ -1,9 +1,12 @@
 packages:
+  - infrastructure
   - apps/*
   - packages/*
 
 onlyBuiltDependencies:
   - '@clerk/shared'
+  - '@pulumi/supabase'
+  - '@sentry/cli'
   - browser-tabs-lock
   - bufferutil
   - core-js

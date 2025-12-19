@@ -11,6 +11,8 @@ import { FormStateProvider } from './use-form-state';
 import type { useForm } from './use-form';
 import type { ForwardedRef, HTMLProps, PropsWithChildren } from 'react';
 
+import { cn } from '~/ui/lib/utils';
+
 type FormProps = PropsWithChildren<
   Omit<HTMLProps<HTMLFormElement>, 'id' | 'form' | 'onSubmit'> & {
     form: ReturnType<typeof useForm>;
@@ -18,13 +20,20 @@ type FormProps = PropsWithChildren<
 >;
 
 const Form = forwardRef(function Form(
-  { form, children, ...props }: FormProps,
+  { form, children, className, ...props }: FormProps,
   ref: ForwardedRef<HTMLFormElement>,
 ) {
   const { submit, id } = form;
   return (
     <FormStateProvider form={form}>
-      <form {...props} ref={ref} id={id} onSubmit={submit} noValidate>
+      <form
+        {...props}
+        className={cn('flex flex-col w-full', className)}
+        ref={ref}
+        id={id}
+        onSubmit={submit}
+        noValidate
+      >
         {children}
       </form>
     </FormStateProvider>

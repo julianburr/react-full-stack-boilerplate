@@ -70,7 +70,7 @@ const requestContextPlugin: FastifyPluginAsync = async (app) => {
     };
 
     const sessionContext = {
-      isSignedIn: clerkAuth.isAuthenticated,
+      isSignedIn: !!clerkAuth.isAuthenticated,
       userId: user?.id,
       userEmail: user?.emailAddresses[0].emailAddress,
       orgId: org?.id,

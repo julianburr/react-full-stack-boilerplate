@@ -127,7 +127,9 @@ export function useAuth() {
   api.setUrl(import.meta.env.VITE_API_URL!);
   api.setGetToken(clerk.getToken);
 
-  return { ...clerk, ...custom };
+  console.log({ clerk, custom });
+
+  return useMemo(() => ({ ...clerk, ...custom }), [clerk, custom]);
 }
 
 type FlagKeys = 'test-feature-1' | 'test-feature-2';

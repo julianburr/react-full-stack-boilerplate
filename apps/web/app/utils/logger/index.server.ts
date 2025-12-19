@@ -1,5 +1,12 @@
 import pino from 'pino';
 
+// NOTE: this is a vercel server function quirk, we need to use an import here to
+// ensure vercel is bundling the actual depenendency, since we're just referencing it
+// by string in the transport target settings below
+import '@logtail/pino';
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 const transport = pino.transport({
   targets: [
     ...(process.env.LOGTAIL_SOURCE_TOKEN
@@ -30,7 +37,13 @@ const transport = pino.transport({
         ]
       : []),
 
-    { target: 'pino-pretty' },
+    ...(!isProduction
+      ? [
+          {
+            target: 'pino-pretty',
+          },
+        ]
+      : []),
   ],
 });
 

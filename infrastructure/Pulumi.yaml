@@ -1,0 +1,12 @@
+name: boilerplate-infrastructure
+runtime:
+  name: nodejs
+  options:
+    typescript: true
+description: Infrastructure as Code for React Full Stack Boilerplate
+packages:
+  supabase:
+    source: terraform-provider
+    version: 1.0.2
+    parameters:
+      - supabase/supabase

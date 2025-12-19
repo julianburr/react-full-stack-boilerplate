@@ -62,8 +62,8 @@ export default function SignIn() {
       </Heading>
 
       <Form form={form}>
-        <Fieldset>
-          <Button variant="primary" size="lg" width="full" onClick={handleSignInWithGoogle}>
+        <Fieldset className="items-center">
+          <Button variant="primary" size="lg" className="w-full" onClick={handleSignInWithGoogle}>
             <span className="flex flex-row items-center gap-3">
               <GoogleLogoIcon />
               <span>Sign in with Google</span>

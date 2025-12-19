@@ -1,0 +1,77 @@
+name: Deploy to development
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: development
+  cancel-in-progress: true
+
+jobs:
+  ###
+  # TESTS & LINTING
+  ###
+  test:
+    name: Run tests & linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/test
+        with:
+          phase-token: ${{ secrets.PHASE_TOKEN }}
+
+  ###
+  # DEPLOY INFRASTRUCTURE
+  ###
+  deploy-infrastructure:
+    name: Deploy infrastructure (Development)
+    runs-on: ubuntu-latest
+    needs: [test]
+    outputs:
+      api-project-id: ${{ steps.deploy.outputs.api-project-id }}
+      web-project-id: ${{ steps.deploy.outputs.web-project-id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/deploy-infrastructure
+        id: deploy
+        with:
+          environment: development
+          phase-token: ${{ secrets.PHASE_TOKEN }}
+          pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  ###
+  # DEPLOY API APP
+  ###
+  deploy-api:
+    name: Deploy API app (Development)
+    runs-on: ubuntu-latest
+    needs: [deploy-infrastructure]
+    outputs:
+      api-url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/deploy-api
+        id: deploy
+        with:
+          environment: development
+          project-id: ${{ needs.deploy-infrastructure.outputs.api-project-id }}
+          phase-token: ${{ secrets.PHASE_TOKEN }}
+          pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  ###
+  # DEPLOY WEB APP
+  ###
+  deploy-web:
+    name: Deploy web app (Development)
+    runs-on: ubuntu-latest
+    needs: [deploy-infrastructure, deploy-api]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/deploy-web
+        with:
+          environment: development
+          project-id: ${{ needs.deploy-infrastructure.outputs.web-project-id }}
+          phase-token: ${{ secrets.PHASE_TOKEN }}
+          api-url: ${{ needs.deploy-api.outputs.api-url }}
