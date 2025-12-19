@@ -323,9 +323,27 @@ importers:
         specifier: ^3.0.0
         version: 3.213.0(ts-node@10.9.2(@types/node@24.10.3)(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
+      '@julianburr/eslint-config':
+        specifier: workspace:*
+        version: link:../packages/eslint-config
+      '@julianburr/prettier-config':
+        specifier: workspace:*
+        version: link:../packages/prettier-config
+      '@julianburr/secrets':
+        specifier: workspace:*
+        version: link:../packages/secrets
       '@types/node':
         specifier: ^24.0.8
         version: 24.10.3
+      eslint:
+        specifier: ^9.39.1
+        version: 9.39.1(jiti@2.6.1)
+      lint-staged:
+        specifier: ^16.2.7
+        version: 16.2.7
+      prettier:
+        specifier: ^3.7.4
+        version: 3.7.4
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
