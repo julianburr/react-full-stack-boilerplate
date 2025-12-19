@@ -29,10 +29,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Pulumi
-        uses: pulumi/actions@v4
+        run: pnpm install
 
       - name: Load .env for deployment
         run: |
@@ -40,11 +37,14 @@ jobs:
           cat .env >> $GITHUB_ENV
         working-directory: infrastructure
 
+      - name: Install Pulumi
+        uses: pulumi/actions@v4
+
       - name: Configure Pulumi
         run: |
           pulumi login
-          cd infrastructure
           pulumi stack select development || pulumi stack init development
+        working-directory: infrastructure
 
       - name: Deploy infrastructure via Pulumi
         run: pulumi up --yes

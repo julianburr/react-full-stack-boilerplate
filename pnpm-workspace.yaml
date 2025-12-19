@@ -5,6 +5,7 @@ packages:
 
 onlyBuiltDependencies:
   - '@clerk/shared'
+  - '@sentry/cli'
   - browser-tabs-lock
   - bufferutil
   - core-js
