@@ -1,0 +1,35 @@
+{
+  "name": "@boilerplate/infrastructure",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "pulumi up",
+    "preview": "pulumi preview",
+    "destroy": "pulumi destroy",
+    "lint": "eslint .",
+    "lint:staged": "lint-staged",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.213.0",
+    "@pulumi/supabase": "file:sdks/supabase",
+    "@pulumiverse/vercel": "^3.15.1"
+  },
+  "devDependencies": {
+    "@julianburr/eslint-config": "workspace:*",
+    "@julianburr/prettier-config": "workspace:*",
+    "@julianburr/secrets": "workspace:*",
+    "@types/node": "^22",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.2",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": "eslint --fix --quiet",
+    "*.{json,md}": "prettier --write"
+  }
+}

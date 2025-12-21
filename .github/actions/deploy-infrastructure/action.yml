@@ -1,0 +1,73 @@
+name: Deploy web app
+description: Deploys the web app to Vercel
+
+inputs:
+  node-version:
+    description: The Node.js version to use
+    required: false
+    default: '22'
+  environment:
+    description: The environment to deploy to
+    required: true
+  phase-token:
+    description: The Phase token to use
+    required: true
+  pulumi-access-token:
+    description: The Pulumi access token to use
+    required: true
+
+outputs:
+  api-project-id:
+    description: The ID of the API project
+    value: ${{ steps.pulumi.outputs.apiProjectId }}
+  web-project-id:
+    description: The ID of the web project
+    value: ${{ steps.pulumi.outputs.webProjectId }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
+
+    - name: Build secrets package
+      shell: bash
+      run: pnpm build
+      working-directory: packages/secrets
+
+    - name: Load .env for deployment
+      shell: bash
+      run: node ../packages/secrets/dist/bin.js inject -i .env.${{ inputs.environment }} -o .env
+      working-directory: ./infrastructure
+      env:
+        PHASE_TOKEN: ${{ inputs.phase-token }}
+
+    - uses: falti/dotenv-action@v1.1.5
+      with:
+        path: ./infrastructure/.env
+        mask-variables: true
+        export-variables: true
+        keys-case: 'bypass'
+
+    - name: Pulumi up
+      uses: pulumi/actions@v6
+      id: pulumi
+      with:
+        command: up
+        stack-name: ${{ inputs.environment }}
+        work-dir: ./infrastructure
+        upsert: true
+
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
+        VERCEL_API_TOKEN: ${{ env.VERCEL_API_TOKEN }}

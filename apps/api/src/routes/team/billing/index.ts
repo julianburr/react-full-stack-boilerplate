@@ -20,12 +20,12 @@ const billing: FastifyPluginAsync = async (fastify): Promise<void> => {
     const stripe = getStripeClient();
     const c = await ensureCustomer({ auth });
 
-    const customer = await stripe.customers.retrieve(c.id, { expand: ['subscriptions'] });
-    if (customer.deleted) {
+    const customer = (await stripe.customers.retrieve(c.id, { expand: ['subscriptions'] })) as any;
+    if (customer.deleted === true) {
       throw new BadRequestError('Customer is deleted');
     }
 
-    const subscription = customer.subscriptions?.data?.find((s) => s.status === 'active');
+    const subscription = customer.subscriptions?.data?.find((s: any) => s.status === 'active');
     if (subscription?.items.data[0].price.id === price) {
       // The price is unchanged, do nothing
       // Check if the subscription is scheduled to be cancelled, if so reverse that and resume it
@@ -60,12 +60,12 @@ const billing: FastifyPluginAsync = async (fastify): Promise<void> => {
     const stripe = getStripeClient();
     const c = await ensureCustomer({ auth });
 
-    const customer = await stripe.customers.retrieve(c.id, { expand: ['subscriptions'] });
+    const customer = (await stripe.customers.retrieve(c.id, { expand: ['subscriptions'] })) as any;
     if (customer.deleted) {
       throw new BadRequestError('Customer is deleted');
     }
 
-    const subscription = customer.subscriptions?.data?.find((s) => s.status === 'active');
+    const subscription = customer.subscriptions?.data?.find((s: any) => s.status === 'active');
     if (subscription?.id) {
       const stripe = getStripeClient();
       await stripe.subscriptions.update(subscription.id, {

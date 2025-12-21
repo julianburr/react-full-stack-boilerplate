@@ -11,7 +11,7 @@ const me: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.get('/', async (req) => {
     if (!req.session?.user?.id || !req.session.org?.id) {
       return {
-        isSignedIn: true,
+        isSignedIn: false,
         subscription: null,
         user: req.session?.user,
         team: null,
@@ -43,7 +43,7 @@ const me: FastifyPluginAsync = async (fastify): Promise<void> => {
     }
 
     return {
-      isSignedIn: req.session.isSignedIn,
+      isSignedIn: !!req.session?.isSignedIn,
       customer,
       subscription,
       user: req.session.user,

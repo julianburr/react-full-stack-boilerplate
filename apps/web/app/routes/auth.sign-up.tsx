@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 
 import { Button } from '~/components/button';
 import { Field, Form, useForm } from '~/components/form';
+import { Fieldset } from '~/components/form/fieldset';
 import { Hr } from '~/components/hr';
 import { EmailInput } from '~/components/inputs/email-input';
 import { PasswordInput } from '~/components/inputs/password-input';
@@ -60,25 +61,26 @@ export default function SignUp() {
       </Heading>
 
       <Form form={form} className="flex flex-col gap-2 text-left w-full">
-        <Button variant="primary" size="lg" width="full" onClick={handleSignUpWithGoogle}>
-          <span className="flex flex-row items-center gap-3">
-            <GoogleLogoIcon />
-            <span>Sign in with Google</span>
-          </span>
-        </Button>
-        <Hr text="or" />
-        <Field name="email" label="Email" Input={EmailInput} />
-        <Field name="password" label="Password" Input={PasswordInput} />
-        width="full"
-        <Button
-          variant="primary"
-          size="lg"
-          form={form.id}
-          isLoading={form.formState.isSubmitting}
-          className="w-full"
-        >
-          Sign in
-        </Button>
+        <Fieldset className="items-center">
+          <Button variant="primary" size="lg" width="full" onClick={handleSignUpWithGoogle}>
+            <span className="flex flex-row items-center gap-3">
+              <GoogleLogoIcon />
+              <span>Sign in with Google</span>
+            </span>
+          </Button>
+          <Hr text="or" />
+          <Field name="email" label="Email" Input={EmailInput} />
+          <Field name="password" label="Password" Input={PasswordInput} />
+          <Button
+            variant="primary"
+            size="lg"
+            form={form.id}
+            isLoading={form.formState.isSubmitting}
+            className="w-full"
+          >
+            Sign in
+          </Button>
+        </Fieldset>
       </Form>
 
       <P size="sm">

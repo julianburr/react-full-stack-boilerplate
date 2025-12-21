@@ -1,0 +1,106 @@
+name: Deploy API app
+description: Deploys the API app to Vercel
+
+inputs:
+  node-version:
+    description: The Node.js version to use
+    required: false
+    default: '22'
+  environment:
+    description: The environment to deploy to
+    required: true
+  project-id:
+    description: The Vercel project ID to deploy to
+    required: true
+  phase-token:
+    description: The Phase token to use
+    required: true
+  pulumi-access-token:
+    description: The Pulumi access token to use
+    required: true
+
+outputs:
+  url:
+    description: The URL of the deployed web app
+    value: ${{ steps.deploy.outputs.url }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Install Vercel CLI
+      shell: bash
+      run: pnpm install -g vercel
+
+    - name: Build secrets package
+      shell: bash
+      run: pnpm build
+      working-directory: ./packages/secrets
+
+    - name: Load .env for deployment
+      shell: bash
+      run: node ../packages/secrets/dist/bin.js inject -i .env.${{ inputs.environment }} -o .env
+      working-directory: ./infrastructure
+      env:
+        PHASE_TOKEN: ${{ inputs.phase-token }}
+
+    - uses: falti/dotenv-action@v1.1.5
+      with:
+        path: ./infrastructure/.env
+        mask-variables: true
+        export-variables: true
+        keys-case: 'bypass'
+
+    - name: Create .vercel/project.json
+      shell: bash
+      run: |
+        mkdir -p .vercel || true
+        echo '{ "projectId": "${{ inputs.project-id }}", "orgId": "${{ env.VERCEL_ORG_ID }}" }' \
+          > .vercel/project.json
+
+    - name: Get API database URL
+      shell: bash
+      run: |
+        DB_URL="$(pulumi stack output apiDbUrl --show-secrets --stack ${{ inputs.environment }})"
+        echo "::add-mask::$DB_URL"
+        echo "DATABASE_URL=$DB_URL" >> ../apps/api/.env.${{ inputs.environment }}
+      working-directory: ./infrastructure
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ inputs.pulumi-access-token }}
+
+    - name: Run migrations
+      shell: bash
+      run: node ../../packages/secrets/dist/run.js -i ./apps/api/.env.${{ inputs.environment }} -- pnpm db:migrate
+      working-directory: ./apps/api
+      env:
+        PHASE_TOKEN: ${{ inputs.phase-token }}
+
+    - name: Deploy to Vercel
+      shell: bash
+      id: deploy
+      run: |
+        pnpm install -g vercel@latest
+        node ./packages/secrets/dist/bin.js inject -i=./apps/api/.env.${{ inputs.environment }} -o=./apps/api/.env
+        node ./scripts/vercel-deploy.mjs > url.txt
+        echo "url=$(cat url.txt)" >> $GITHUB_OUTPUT
+      env:
+        VERCEL_API_TOKEN: ${{ env.VERCEL_API_TOKEN }}
+        VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
+        PHASE_TOKEN: ${{ inputs.phase-token }}
+        ENV_PATH: ./apps/api/.env

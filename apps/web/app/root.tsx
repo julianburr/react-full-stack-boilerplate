@@ -1,5 +1,5 @@
 import { ClerkProvider } from '@clerk/react-router';
-import { clerkMiddleware, getAuth, rootAuthLoader } from '@clerk/react-router/server';
+import { rootAuthLoader } from '@clerk/react-router/server';
 import { IconContext } from '@phosphor-icons/react';
 import * as Sentry from '@sentry/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,42 +17,39 @@ import { logger } from '~/utils/logger/index.server';
 import './app.css';
 
 /**
- * Clerk middleware
- */
-export const middleware: Route.MiddlewareFunction[] = [
-  clerkMiddleware({
-    organizationSyncOptions: {
-      organizationPatterns: ['/dashboard/:slug'],
-    },
-  }) as any,
-];
-
-/**
  * Root loader to fetch meta information about current user session
  * Only runs on initial page load, not on client-side navigation
  */
 export const loader = async (args: Route.LoaderArgs) => {
-  const auth = await rootAuthLoader(args);
-  const clerk = await getAuth(args, { acceptsToken: ['session_token'] });
+  return rootAuthLoader(
+    args,
+    async ({ request }) => {
+      api.setUrl(import.meta.env.VITE_API_URL!);
+      api.setGetToken(request.auth.getToken);
+      const me = await api('/me');
 
-  api.setUrl(import.meta.env.VITE_API_URL!);
-  api.setGetToken(clerk.getToken);
-  const me = await api('/me');
+      console.log({ me });
 
-  const sessionContext = {
-    isSignedIn: me.isAuthenticated,
-    userId: me.user?.id,
-    userEmail: me.user?.emailAddresses[0].emailAddress,
-    orgId: me.team?.id,
-    orgSlug: me.team?.slug,
-    orgName: me.team?.name,
-    flags: me.flags,
-  };
+      const sessionContext = {
+        isSignedIn: !!me.isAuthenticated,
+        userId: me.user?.id,
+        userEmail: me.user?.emailAddresses[0].emailAddress,
+        orgId: me.team?.id,
+        orgSlug: me.team?.slug,
+        orgName: me.team?.name,
+        flags: me.flags,
+      };
 
-  const path = new URL(args.request.url).pathname;
-  logger.info({ isRequestLog: true, statusCode: 200, session: sessionContext }, `GET ${path}`);
+      const path = new URL(args.request.url).pathname;
+      logger.info({ isRequestLog: true, statusCode: 200, session: sessionContext }, `GET ${path}`);
 
-  return { auth, ...me };
+      return { me };
+    },
+    {
+      publishableKey: import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+      secretKey: process.env.CLERK_SECRET_KEY,
+    },
+  );
 };
 
 /**
@@ -70,10 +67,6 @@ export const links: Route.LinksFunction = () => [
     rel: 'preconnect',
     href: 'https://fonts.gstatic.com',
     crossOrigin: 'anonymous',
-  },
-  {
-    rel: 'stylesheet',
-    href: 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap',
   },
   {
     rel: 'stylesheet',
@@ -105,11 +98,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 const queryClient = new QueryClient();
 
 export default function App({ loaderData }: Route.ComponentProps) {
-  const { auth, ...rest } = loaderData;
   return (
     <QueryClientProvider client={queryClient}>
-      <ClerkProvider loaderData={auth}>
-        <AuthProvider value={rest}>
+      <ClerkProvider
+        publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
+        loaderData={loaderData}
+      >
+        <AuthProvider value={loaderData.me}>
           <DialogStackProvider>
             <IconContext.Provider value={{ weight: 'bold', size: 16 }}>
               <R.Outlet />

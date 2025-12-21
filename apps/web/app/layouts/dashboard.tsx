@@ -14,6 +14,8 @@ export default function DashboardLayout() {
   const auth = useAuth();
   const location = useLocation();
 
+  console.log({ auth });
+
   const createTeamDialog = useDialog(CreateTeamDialog);
 
   if (!auth.isLoaded) {

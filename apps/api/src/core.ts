@@ -7,13 +7,12 @@ import cors from '@fastify/cors';
 import type { AutoloadPluginOptions } from '@fastify/autoload';
 import type { FastifyPluginAsync, FastifyServerOptions } from 'fastify';
 
-import { logger } from '~/utils/logger';
 import { setupSentry } from '~/utils/sentry';
 
 setupSentry();
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {}
-const options: AppOptions = { logger };
+const options: AppOptions = { logger: true };
 
 const app: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void> => {
   fastify.register(cors, { origin: '*' });
